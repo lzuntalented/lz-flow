@@ -40,6 +40,38 @@ export default class Group {
         this.list[name] = config;
     }
 
+    setPosition(point) {
+        this.config.x = point.x;
+        this.config.y = point.y;
+        const tmp = {};
+        for(const name in this.list) {
+            const config = this.list[name];
+            const cfg = this.list[name].attr;
+            if (name === Constants.defautShape.text) {
+                const width = Util.getTextWidth(name);
+                const height = cfg.fontSize || 12;
+                const x = cfg.x + this.config.x;
+                const y = cfg.y + this.config.y - height;
+                const points = Util.getPointsFromRect(x, y, width, height);
+                config.polygonPoints = points;
+            } else if (name === Constants.defautShape.rect) {
+                const width = cfg.width;
+                const height = cfg.height;
+                const x = cfg.x + this.config.x;
+                const y = cfg.y + this.config.y;
+                const points = Util.getPointsFromRect(x, y, width, height);
+                config.polygonPoints = points;
+            } else if (name === Constants.defautShape.polygon) {
+                const points = [];
+                cfg.points.forEach(it => {
+                    points.push([it[0] + this.config.x, it[1] + this.config.y]);
+                });
+                config.polygonPoints = points;
+            }
+        }
+        this.parseAnchorPoints(this.anchors || []);
+    }
+
     /**
      * 解析控制点
      */
@@ -88,6 +120,7 @@ export default class Group {
         });
         // 图形组的控制点
         this.anchorPoints = result;
+        this.anchors = anchors;
     }
 
     render() {

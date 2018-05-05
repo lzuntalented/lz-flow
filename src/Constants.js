@@ -20,5 +20,13 @@ export default {
         rect: 'rect',
         text: 'text',
         polygon: 'polygon'
+    },
+
+    // 组件模式
+    mode: {
+        // 展示模式
+        view: 'view',
+        // 编辑模式
+        edit: 'edit'
     }
 }

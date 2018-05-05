@@ -189,6 +189,18 @@ export default class Draw {
                 let lastPoint = [start.x, start.y + extra];
                 result.push([lastPoint[0], lastPoint[1]]);
                 result.push([end.x, lastPoint[1]]);
+            } else {
+                let lastPoint = [start.x, start.y + extra];
+                result.push([lastPoint[0], lastPoint[1]]);
+                lastPoint = [end.x, lastPoint[1]];
+                if (inside(lastPoint, Util.getPointsFromRect(endSize.x, endSize.y, endSize.w, endSize.h))) {
+                    lastPoint = [endSize.x - extra, lastPoint[1]];
+                    result.push([lastPoint[0], lastPoint[1]]);
+                    result.push([lastPoint[0], end.y - extra]);
+                    result.push([end.x, end.y - extra]);
+                } else {
+                    result.push([lastPoint[0], lastPoint[1]]);
+                }
             }
         }
 
@@ -211,6 +223,13 @@ export default class Draw {
             x: point.x - width / 2,
             y: point.y - height / 2
         };
+    }
+
+    clearPanel() {
+        const width = this.containerSize.width;
+        const height = this.containerSize.height;
+        this.showCtx.clearRect(0, 0, width, height);
+        this.editCtx.clearRect(0, 0, width, height);
     }
 
     drawRect(ctx, x, y, w, h) {
