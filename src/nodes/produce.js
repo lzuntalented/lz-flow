@@ -6,16 +6,23 @@
 
 import Constants from '../Constants';
 import LzFlow from '../LzFlow';
+import Util from '../utils';
 
 const name = `${Constants.prefix}Produce`;
 LzFlow.registerNode(name, {
     draw(config, group) {
+        let width = Util.getTextWidth(config.name);
+        let height = config.fontSize || 12;
+        const padding = 8;
+        width += padding * 2;
+        height += padding * 2;
+
         const result = group.add('rect', {
             attr: {
                 x: 0,
                 y: 0,
-                width: 100,
-                height: 100,
+                width,
+                height,
                 stroke: 'blue',
                 fill: 'red'
             }
@@ -24,8 +31,8 @@ LzFlow.registerNode(name, {
         group.add('text', {
             attr: {
                 label: config.name,
-                x: 0,
-                y: 12,
+                x: padding,
+                y: 12 + padding,
                 fill: 'green'
             }
         });

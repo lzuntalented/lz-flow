@@ -141,7 +141,7 @@ export default class Draw {
         const testY = (end.y - start.y) / (end.x - start.x) * testX;
         // 垂直连线
         if (start.x === end.x) {
-            return [startPoint, endPoint];
+            return [[startPoint.x, startPoint.y], [endPoint.x, endPoint.y]];
         }
         const startSide = Util.getPointInRectSide(startPoint, startSize);
         const endSide = Util.getPointInRectSide(endPoint, endSize);

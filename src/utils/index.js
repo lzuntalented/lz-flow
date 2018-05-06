@@ -94,10 +94,20 @@ function getPointInRectSide(point, rect) {
     return false;
 }
 
+function inCircle(arrPoint, circleCenter, radius) {
+    const r = Math.sqrt(Math.abs(arrPoint[0] - circleCenter.x) + Math.abs(arrPoint[1] - circleCenter.y));
+    if (r <= radius) {
+        return true;
+    }
+
+    return false;
+}
+
 export default {
     getTextWidth,
     getPointsFromRect,
     addOffsetToPolygon,
     getdiamondPoints,
-    getPointInRectSide
+    getPointInRectSide,
+    inCircle
 };

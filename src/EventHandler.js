@@ -83,6 +83,31 @@ export default class EventHandler {
         console.log(clickItem);
     }
 
+    /**
+     * 检测点是否在控制点上
+     * @param {} arrPoint 
+     */
+    checkPointInAnchor(arrPoint) {
+        const list = this.drawHandler.model.get(Constants.groupList, []);
+
+        let clickItem;
+        for(let len = list.length, i = len - 1; i >= 0; --i) {
+            const it = list[i];
+            if (it.anchorPoints) {
+                for(let j = 0; j < it.anchorPoints.length; ++j) {
+                    if (Util.inCircle(arrPoint, it.anchorPoints[j], 4)) {
+                        console.log('in anchor' , it);
+                        return it;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 检测点是否在节点上
+     */
     checkPointInGroup(arrPoint) {
         const list = this.drawHandler.model.get(Constants.groupList, []);
 
@@ -101,6 +126,10 @@ export default class EventHandler {
         return false;
     }
 
+    /**
+     * 获取坐标点对象
+     * @param {*} point 
+     */
     getPointObject(point) {
         // const result = {
 
@@ -151,6 +180,9 @@ export default class EventHandler {
             y: e.clientY
         };
         const p = this.getPointObject(clickPoint);
+        if (this.checkPointInAnchor([p.coordPoint.x, p.coordPoint.y])) {
+
+        }
         const item = this.checkPointInGroup([p.coordPoint.x, p.coordPoint.y]);
         if (item) {
             this.draging = true;
