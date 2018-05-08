@@ -123,6 +123,34 @@ export default class Draw {
             }
             this.drawAnchorPoint(this.editCtx, it.anchorPoints);
         });
+
+        this.renderDefaultEditItem();
+    }
+
+    /**
+     * 绘制编辑模式下编辑内容
+     */
+    renderDefaultEditItem() {
+        const list = this.model.get(Constants.groupEditList, []);
+        list.forEach((it, idx) => {
+            for(const key in it.list) {
+                const value = it.list[key];
+                if (this.defautShape.indexOf(key) > -1) {
+                    const config = it.config;
+                    config.x = 10;
+                    config.y = idx * 60 + 30;
+                    this.drawDefaultShape(this.editCtx, key, value, it.config, {x: 0, y:0});
+                }
+            }
+        });
+
+        this.drawLine(this.editCtx, {
+            x: 100,
+            y: 0,
+        },{
+            x: 100,
+            y: this.height,
+        });
     }
 
     getLinkCtrlPoints(startPoint, endPoint, startSize, endSize) {
@@ -243,9 +271,9 @@ export default class Draw {
      * @param {*} config 
      * @param {*} groupConfig 
      */
-    drawDefaultShape(ctx, shape, config, groupConfig) {
-        const groupX = groupConfig.x - this.startPoint.x;
-        const groupY =  groupConfig.y - this.startPoint.y;
+    drawDefaultShape(ctx, shape, config, groupConfig, defaultStart) {
+        const groupX = defaultStart ? groupConfig.x - defaultStart.x : groupConfig.x - this.startPoint.x;
+        const groupY = defaultStart ? groupConfig.y - defaultStart.y : groupConfig.y - this.startPoint.y;
          
         const cfg = config.attr;
         if (shape === Constants.defautShape.rect) {
@@ -331,6 +359,39 @@ export default class Draw {
                 ctx.lineTo(x, y);
             }
         });
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    //---------使用三次贝塞尔曲线模拟椭圆1---------------------
+    //此方法也会产生当lineWidth较宽，椭圆较扁时，
+    //长轴端较尖锐，不平滑的现象
+    drawEllipse(context, x, y, a, b){
+        //关键是bezierCurveTo中两个控制点的设置
+        //0.5和0.6是两个关键系数（在本函数中为试验而得）
+        var ox = 0.5 * a,
+            oy = 0.6 * b;
+
+        context.save();
+        context.translate(x, y);
+        context.beginPath();
+        //从椭圆纵轴下端开始逆时针方向绘制
+        context.moveTo(0, b); 
+        context.bezierCurveTo(ox, b, a, oy, a, 0);
+        context.bezierCurveTo(a, -oy, ox, -b, 0, -b);
+        context.bezierCurveTo(-ox, -b, -a, -oy, -a, 0);
+        context.bezierCurveTo(-a, oy, -ox, b, 0, b);
+        context.closePath();
+        context.stroke();
+        context.restore();
+    }
+
+    drawLine(ctx, start, end) {
+        ctx.save();
+        ctx.strokeStyle = '#cacaca';
+        ctx.beginPath();
+        ctx.moveTo(start.x, start.y);
+        ctx.lineTo(end.x, end.y);
         ctx.stroke();
         ctx.restore();
     }

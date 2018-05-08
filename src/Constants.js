@@ -4,6 +4,7 @@ export default {
     groupNodes: 'groupNodes',
     groupLines: 'groupLines',
     groupList: 'groupList',
+    groupEditList: 'groupEditList',
 
     groupType: {
         node: 'groupType.node',
