@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2018 Your Company
  */
+import inside from 'point-in-polygon';
 import LzFlow from './LzFlow';
 import Constants from './Constants';
 import Util from './utils';
@@ -14,32 +15,21 @@ export default class Group {
         this.type = type;
     }
 
+    /**
+     * 添加图形
+     * @param {*} name 
+     * @param {*} config 
+     */
     add(name, config) {
         const cfg = config.attr;
-        if (name === Constants.defautShape.text) {
-            const width = Util.getTextWidth(name);
-            const height = cfg.fontSize || 12;
-            const x = cfg.x + this.config.x;
-            const y = cfg.y + this.config.y - height;
-            const points = Util.getPointsFromRect(x, y, width, height);
-            config.polygonPoints = points;
-        } else if (name === Constants.defautShape.rect) {
-            const width = cfg.width;
-            const height = cfg.height;
-            const x = cfg.x + this.config.x;
-            const y = cfg.y + this.config.y;
-            const points = Util.getPointsFromRect(x, y, width, height);
-            config.polygonPoints = points;
-        } else if (name === Constants.defautShape.polygon) {
-            const points = [];
-            cfg.points.forEach(it => {
-                points.push([it[0] + this.config.x, it[1] + this.config.y]);
-            });
-            config.polygonPoints = points;
-        }
+        config.polygonPoints = this.getPolygonPoints(name, cfg);
         this.list[name] = config;
     }
 
+    /**
+     * 重置坐标
+     * @param {*} point 
+     */
     setPosition(point) {
         this.config.x = point.x;
         this.config.y = point.y;
@@ -47,29 +37,40 @@ export default class Group {
         for(const name in this.list) {
             const config = this.list[name];
             const cfg = this.list[name].attr;
-            if (name === Constants.defautShape.text) {
-                const width = Util.getTextWidth(name);
-                const height = cfg.fontSize || 12;
-                const x = cfg.x + this.config.x;
-                const y = cfg.y + this.config.y - height;
-                const points = Util.getPointsFromRect(x, y, width, height);
-                config.polygonPoints = points;
-            } else if (name === Constants.defautShape.rect) {
-                const width = cfg.width;
-                const height = cfg.height;
-                const x = cfg.x + this.config.x;
-                const y = cfg.y + this.config.y;
-                const points = Util.getPointsFromRect(x, y, width, height);
-                config.polygonPoints = points;
-            } else if (name === Constants.defautShape.polygon) {
-                const points = [];
-                cfg.points.forEach(it => {
-                    points.push([it[0] + this.config.x, it[1] + this.config.y]);
-                });
-                config.polygonPoints = points;
-            }
+            config.polygonPoints = this.getPolygonPoints(name, cfg);
         }
         this.parseAnchorPoints(this.anchors || []);
+    }
+
+    /**
+     * 获取四方坐标
+     * @param {*} name 
+     * @param {*} cfg 
+     */
+    getPolygonPoints(name, cfg) {
+        let result = [];
+        if (name === Constants.defautShape.text) {
+            const width = Util.getTextWidth(name);
+            const height = cfg.fontSize || 12;
+            const x = cfg.x + this.config.x;
+            const y = cfg.y + this.config.y - height;
+            const points = Util.getPointsFromRect(x, y, width, height);
+            result = points;
+        } else if (name === Constants.defautShape.rect) {
+            const width = cfg.width;
+            const height = cfg.height;
+            const x = cfg.x + this.config.x;
+            const y = cfg.y + this.config.y;
+            const points = Util.getPointsFromRect(x, y, width, height);
+            result = points;
+        } else if (name === Constants.defautShape.polygon) {
+            const points = [];
+            cfg.points.forEach(it => {
+                points.push([it[0] + this.config.x, it[1] + this.config.y]);
+            });
+            result = points;
+        }
+        return result;
     }
 
     /**
@@ -142,5 +143,21 @@ export default class Group {
         this.parseAnchorPoints(hooks.getAnchorPoints && hooks.getAnchorPoints() || []);
         return keyShape;
         // console.log(this.list);
+    }
+
+    pointIn(point) {
+        const result = false;
+        if (this.type === Constants.groupType.node) {
+            this.list.forEach(it => {
+                if (inside(Util.pointToArray(point), it.polygonPoints)) {
+                    result = true;
+                }
+            });
+        }
+        return result;
+    }
+
+    pointInAnchor(point) {
+
     }
 }

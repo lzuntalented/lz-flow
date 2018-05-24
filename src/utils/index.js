@@ -103,11 +103,24 @@ function inCircle(arrPoint, circleCenter, radius) {
     return false;
 }
 
+function isUndefined (obj) {
+    return typeof obj === 'undefined';
+}
+
+function pointToArray(point) {
+    return [point.x, point.y];
+}
+
+function arrayToPoint(arrPoint) {
+    return {x: arrPoint[0], y: arrPoint[1]};
+}
+
 export default {
     getTextWidth,
     getPointsFromRect,
     addOffsetToPolygon,
     getdiamondPoints,
     getPointInRectSide,
-    inCircle
+    inCircle,
+    pointToArray
 };
