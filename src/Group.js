@@ -13,6 +13,7 @@ export default class Group {
         this.list = {};
         this.config = cfg;
         this.type = type;
+        this.render();
     }
 
     /**
@@ -145,6 +146,10 @@ export default class Group {
         // console.log(this.list);
     }
 
+    /**
+     * 检测点是否在节点上
+     * @param {*} point 
+     */
     pointIn(point) {
         const result = false;
         if (this.type === Constants.groupType.node) {

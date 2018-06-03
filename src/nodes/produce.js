@@ -12,28 +12,30 @@ const name = `${Constants.prefix}Produce`;
 LzFlow.registerNode(name, {
     draw(config, group) {
         let width = Util.getTextWidth(config.name);
+        const txtWidth = width;
         let height = config.fontSize || 12;
+        const txtHeight = height;
         const padding = 8;
         width += padding * 2;
         height += padding * 2;
 
         const result = group.add('rect', {
             attr: {
-                x: 0,
-                y: 0,
+                x: -width / 2,
+                y: -height / 2,
                 width,
                 height,
-                stroke: 'blue',
-                fill: 'red'
+                stroke: '#49dbff',
+                fill: '#8be3fe'
             }
         });
 
         group.add('text', {
             attr: {
                 label: config.name,
-                x: padding,
-                y: 12 + padding,
-                fill: 'green'
+                x: -txtWidth / 2,
+                y: txtHeight / 2,
+                fill: '#6a6a6a'
             }
         });
 

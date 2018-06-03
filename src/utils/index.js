@@ -115,6 +115,21 @@ function arrayToPoint(arrPoint) {
     return {x: arrPoint[0], y: arrPoint[1]};
 }
 
+/**
+ * 随机字符串生成器
+ * @param {*} len 
+ */
+function randomString(len = 6) {
+    const domain = '1234567890qwertyuiopasdfghjklzxcvbnm';
+    const domainLen = domain.length;
+    let result = '';
+    for (let i = 0; i < len; ++i) {
+        const idx = Math.floor(Math.random() * domainLen);
+        result += domain[idx];
+    }
+    return result;
+}
+
 export default {
     getTextWidth,
     getPointsFromRect,
@@ -122,5 +137,6 @@ export default {
     getdiamondPoints,
     getPointInRectSide,
     inCircle,
-    pointToArray
+    pointToArray,
+    randomString
 };

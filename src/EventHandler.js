@@ -22,6 +22,7 @@ export default class EventHandler {
 
         this.draging = false;
         this.dragObject = null;
+        this.mouseDownMode = Constants.eventMode.default;
     }
 
     addEventListener(dom, type, callback) {
@@ -150,9 +151,9 @@ export default class EventHandler {
             y: realY
         }
 
-        const parent = this.container.parentElement;
-        realX += parent.scrollLeft;
-        realY += parent.scrollTop;
+        // const parent = this.container.parentElement;
+        // realX += parent.scrollLeft;
+        // realY += parent.scrollTop;
 
 
         // canvas点击的真实坐标

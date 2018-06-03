@@ -9,6 +9,9 @@ import Draw from './Draw';
 import Constants from './Constants';
 import Model from './Model';
 import Group from './Group';
+import GroupManage from './GroupManage';
+import IDManage from './IDManage';
+import CoordManage from './CoordManage';
 
 export default class Flow {
     constructor(options){
@@ -17,18 +20,32 @@ export default class Flow {
         };
         Object.assign(this.config, options);
 
+        // 初始化模型
         this.model = new Model();
+
+        // 节点管理
+        this.gm = new GroupManage(this.model);
+        this.model.set(Constants.instance.groupManage, this.gm);
+
+        // id管理器
+        this.mIDManage = new IDManage();
+        this.model.set(Constants.instance.idManage, this.mIDManage);
+
+        // 坐标管理器
+        const mCoordManage = new CoordManage(this.model);
+        this.model.set(Constants.instance.corrdManage, mCoordManage);
+
+        // 初始化模型数据
+        this.model.set(Constants.groupList, []);
+        this.model.set(Constants.groupNodes, {});
+        this.model.set(Constants.groupLines, {});
 
         const cfg = this.config;
         this.drawHandler = new Draw(cfg.panel, this.model, cfg.height);
     }
 
     render() {
-        const list = this.model.get(Constants.groupList, []);
-        list.forEach(it => {
-            it.render(this.drawHandler.showCtx);
-        });
-        this.drawHandler.render(list);
+        this.drawHandler.render();
     }
 
     source(nodes, lines) {
@@ -68,19 +85,14 @@ export default class Flow {
                 sourceAnchor: 1,
                 targetAnchor: 0
             }
-        ]
-        const nodeTmp = {};
-        const tmp =[];
+        ];
+
         data.forEach(it => {
-            const item = new Group(it);
-            tmp.push(item);
-            nodeTmp[it.id] = item;
+            this.gm.addItem(JSON.parse(JSON.stringify(it)));
         });
         lineData.forEach(it => {
-            tmp.push(new Group(it, Constants.groupType.line));
+            this.gm.addItem(JSON.parse(JSON.stringify(it)), Constants.groupType.line);
         });
-        this.model.set(Constants.groupList, tmp);
-        this.model.set(Constants.groupNodes, nodeTmp);
     }
 
     addEventListener(type, callback) {

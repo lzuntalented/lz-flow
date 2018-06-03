@@ -8,11 +8,15 @@ import inside from 'point-in-polygon';
 import Constants from './Constants';
 import EventHandler from './EventHandler';
 import Util from './utils';
+import Engine from './engine/CanvasEngine';
+import CoordManage from './CoordManage';
+import Point from './Point';
 
 export default class Draw {
     constructor(container, model, height) {
         this.container = container;
         this.model = model;
+        this.mCoordManage = this.model.get(Constants.instance.corrdManage);
         this.height = height;
         this.initVars();
         this.initDom();
@@ -65,8 +69,12 @@ export default class Draw {
         canvasContainer.appendChild(editCanvas);
 
         // 设置绘画实例
-        this.showCtx = showCanvas.getContext('2d');
-        this.editCtx = editCanvas.getContext('2d');
+        const showCtx = showCanvas.getContext('2d');
+        const editCtx = editCanvas.getContext('2d');
+        this.showCtx = showCtx;
+        this.editCtx = editCtx;
+        this.showEngine = new Engine(showCtx);
+        this.editEngine = new Engine(editCtx);
 
         // 画布尺寸
         this.size = {
@@ -86,7 +94,9 @@ export default class Draw {
         this.mEventHandler = new EventHandler(container, this);
     }
 
-    render(groups) {
+    render() {
+        const gm = this.model.get(Constants.instance.groupManage);
+        const groups = gm.getList();
         const nodes = this.model.get(Constants.groupNodes) || {};
         // const lines = this.model.get(Constants.groupLines) || [];
 
@@ -118,7 +128,7 @@ export default class Draw {
             for(const key in it.list) {
                 const value = it.list[key];
                 if (this.defautShape.indexOf(key) > -1) {
-                    this.drawDefaultShape(this.showCtx, key, value, it.config);
+                    this.drawDefaultShape(this.showEngine, key, value, it.config);
                 }
             }
             this.drawAnchorPoint(this.editCtx, it.anchorPoints);
@@ -137,9 +147,9 @@ export default class Draw {
                 const value = it.list[key];
                 if (this.defautShape.indexOf(key) > -1) {
                     const config = it.config;
-                    config.x = 10;
+                    config.x = 50;
                     config.y = idx * 60 + 30;
-                    this.drawDefaultShape(this.editCtx, key, value, it.config, {x: 0, y:0});
+                    this.drawDefaultShape(this.editEngine, key, value, it.config, {x: 0, y:0});
                 }
             }
         });
@@ -272,50 +282,57 @@ export default class Draw {
      * @param {*} groupConfig 
      */
     drawDefaultShape(ctx, shape, config, groupConfig, defaultStart) {
-        const groupX = defaultStart ? groupConfig.x - defaultStart.x : groupConfig.x - this.startPoint.x;
-        const groupY = defaultStart ? groupConfig.y - defaultStart.y : groupConfig.y - this.startPoint.y;
+        const point = this.mCoordManage.pointToCanvasCoord(groupConfig);
+        
+        const groupX = defaultStart ? groupConfig.x - defaultStart.x : point.x;
+        const groupY = defaultStart ? groupConfig.y - defaultStart.y : point.y;
          
         const cfg = config.attr;
+        const option = Object.assign({}, config.attr);
         if (shape === Constants.defautShape.rect) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.strokeStyle = cfg.stroke;
-            ctx.fillStyle = cfg.fill;
-            ctx.rect(groupX + cfg.x, groupY + cfg.y, cfg.width, cfg.height);
-            ctx.closePath();
-            ctx.stroke();
-            ctx.fill();
-            ctx.restore();
+            ctx.rect(groupX + cfg.x, groupY + cfg.y, cfg.width, cfg.height, option);
+            // ctx.save();
+            // ctx.beginPath();
+            // ctx.strokeStyle = cfg.stroke;
+            // ctx.fillStyle = cfg.fill;
+            // ctx.rect(groupX + cfg.x, groupY + cfg.y, cfg.width, cfg.height);
+            // ctx.closePath();
+            // ctx.stroke();
+            // ctx.fill();
+            // ctx.restore();
         } else if (shape === Constants.defautShape.text) {
             const fontFamily = 'Arial';
-            ctx.save();
-            ctx.beginPath();
-            ctx.font = (cfg.fontSize || 12) + 'px' + (' ' + (cfg.fontFamily || fontFamily));
-            ctx.strokeStyle = cfg.stroke;
-            ctx.fillStyle = cfg.fill;
-            ctx.fillText(cfg.label, groupX + cfg.x, groupY + cfg.y);
-            ctx.closePath();
-            ctx.restore();
+            option.font = (cfg.fontSize || 12) + 'px' + (' ' + (cfg.fontFamily || fontFamily));
+            ctx.text(groupX + cfg.x, groupY + cfg.y, cfg.label, option);
+            // ctx.save();
+            // ctx.beginPath();
+            // ctx.font = (cfg.fontSize || 12) + 'px' + (' ' + (cfg.fontFamily || fontFamily));
+            // ctx.strokeStyle = cfg.stroke;
+            // ctx.fillStyle = cfg.fill;
+            // ctx.fillText(cfg.label, groupX + cfg.x, groupY + cfg.y);
+            // ctx.closePath();
+            // ctx.restore();
         } else if (shape === Constants.defautShape.polygon) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.strokeStyle = cfg.stroke;
-            ctx.fillStyle = cfg.fill;
+            ctx.polygon(Point.pointsAddOffset(cfg.points, Point.create(groupX, groupY)), open);
+            // ctx.save();
+            // ctx.beginPath();
+            // ctx.strokeStyle = cfg.stroke;
+            // ctx.fillStyle = cfg.fill;
             
-            const point = cfg.points;
-            point.forEach((it, idx) => {
-                const x = it[0] + groupX;
-                const y = it[1] + groupY;
-                if (idx === 0) {
-                    ctx.moveTo(x, y);
-                } else {
-                    ctx.lineTo(x, y);
-                }
-            });
-            ctx.closePath();
-            ctx.stroke();
-            ctx.fill();
-            ctx.restore();
+            // const point = cfg.points;
+            // point.forEach((it, idx) => {
+            //     const x = it[0] + groupX;
+            //     const y = it[1] + groupY;
+            //     if (idx === 0) {
+            //         ctx.moveTo(x, y);
+            //     } else {
+            //         ctx.lineTo(x, y);
+            //     }
+            // });
+            // ctx.closePath();
+            // ctx.stroke();
+            // ctx.fill();
+            // ctx.restore();
         }
     }
 

@@ -13,25 +13,28 @@ const name = `${Constants.prefix}Judge`;
 LzFlow.registerNode(name, {
     draw(config, group) {
         let width = Util.getTextWidth(config.name);
+        const txtWidth = width;
         let height = config.fontSize || 12;
+        const txtHeight = height;
         const padding = 15;
         width += padding * 2;
         height += padding * 2;
 
-        const points = getdiamondPoints(width / 2, height / 2, width, height);
+        const points = getdiamondPoints(0, 0, width, height);
         const result = group.add('polygon', {
             attr: {
                 points,
-                fill: 'red'
+                stroke: '#49dbff',
+                fill: '#8be3fe'
             }
         });
 
         group.add('text', {
             attr: {
                 label: config.name,
-                x: padding,
-                y: 12 + padding,
-                fill: 'green'
+                x: -txtWidth / 2,
+                y: txtHeight / 2,
+                fill: '#6a6a6a'
             }
         });
 

@@ -1,7 +1,7 @@
 function getElementViewLeft(element) {
-    // if (element.getBoundingClientRect) {
-    //     return element.getBoundingClientRect().left + document.documentElement.scrollLeft;
-    // }
+    if (element.getBoundingClientRect) {
+        return element.getBoundingClientRect().left;
+    }
 
     var actualLeft = element.offsetLeft;
     var current = element.offsetParent;
@@ -21,9 +21,9 @@ function getElementViewLeft(element) {
 }
 
 function getElementViewTop(element) {
-    // if (element.getBoundingClientRect) {
-    //     return element.getBoundingClientRect().top + document.documentElement.scrollTop;
-    // }
+    if (element.getBoundingClientRect) {
+        return element.getBoundingClientRect().top;
+    }
 
     var actualTop = element.offsetTop;
     var current = element.offsetParent;
