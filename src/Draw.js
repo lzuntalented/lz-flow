@@ -29,7 +29,8 @@ export default class Draw {
         this.defautShape = [
             Constants.defautShape.rect,
             Constants.defautShape.text,
-            Constants.defautShape.polygon
+            Constants.defautShape.polygon,
+            Constants.defautShape.ellipse
         ];
         this.startPoint = {
             x: 0,
@@ -117,7 +118,7 @@ export default class Draw {
             const startPoint = source.anchorPoints[sourceIdx];
             const endPoint = target.anchorPoints[targetIdx];
             const points = this.getLinkCtrlPoints(startPoint, endPoint, source.size, target.size);
-            this.drawLinkLines(this.showCtx, points);
+            this.drawLinkLines(this.showEngine, points);
         });
 
         // 绘制节点
@@ -131,7 +132,7 @@ export default class Draw {
                     this.drawDefaultShape(this.showEngine, key, value, it.config);
                 }
             }
-            this.drawAnchorPoint(this.editCtx, it.anchorPoints);
+            this.drawAnchorPoint(this.editEngine, it.anchorPoints);
         });
 
         this.renderDefaultEditItem();
@@ -313,7 +314,11 @@ export default class Draw {
             // ctx.closePath();
             // ctx.restore();
         } else if (shape === Constants.defautShape.polygon) {
-            ctx.polygon(Point.pointsAddOffset(cfg.points, Point.create(groupX, groupY)), open);
+            const ps = [];
+            cfg.points.forEach(it => {
+                ps.push(Util.arrayToPoint(it));
+            });
+            ctx.polygon(Point.pointsAddOffset(ps, Point.create(groupX, groupY)), option);
             // ctx.save();
             // ctx.beginPath();
             // ctx.strokeStyle = cfg.stroke;
@@ -333,6 +338,8 @@ export default class Draw {
             // ctx.stroke();
             // ctx.fill();
             // ctx.restore();
+        } else if (shape === Constants.defautShape.ellipse) {
+            ctx.ellipse(groupX + cfg.x, groupY + cfg.y, cfg.a, cfg.b, option);
         }
     }
 
@@ -342,42 +349,26 @@ export default class Draw {
      * @param {*} points 
      */
     drawAnchorPoint(ctx, points) {
-        const groupX = this.startPoint.x;
-        const groupY = this.startPoint.y;
-
-        ctx.save();
-        ctx.strokeStyle = '';
-        ctx.fillStyle = '#FFFFFF';
         const radius = 4;
+        const option = {
+            fill: '#FFFFFF'
+        };
         points.forEach(it => {
-            ctx.beginPath();
-            ctx.arc(it.x - groupX, it.y - groupY, radius, 0, 2 * Math.PI);
-            ctx.closePath();
-            ctx.stroke();
-            ctx.fill();
+            ctx.circle(this.mCoordManage.pointToCanvasCoord(it), radius, option);
         });
-        ctx.restore();
     }
 
 
     drawLinkLines(ctx, points) {
-        const groupX = this.startPoint.x;
-        const groupY = this.startPoint.y;
-
-        ctx.save();
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.beginPath();
-        points.forEach((it, idx) => {
-            const x = it[0] - groupX;
-            const y = it[1] - groupY;
-            if (idx === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
+        const option = {
+            stroke: '#FFFFFF',
+            closePath: false
+        };
+        const ps = [];
+        points.forEach(it => {
+            ps.push(Util.arrayToPoint(it));
         });
-        ctx.stroke();
-        ctx.restore();
+        ctx.polygon(this.mCoordManage.pointsToCanvasCoord(ps), option);
     }
 
     //---------使用三次贝塞尔曲线模拟椭圆1---------------------

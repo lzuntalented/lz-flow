@@ -41,7 +41,7 @@ export default class Point {
      */
     static pointsAddOffset(arr, offset) {
         return arr.map(it => {
-            return new Point(it.x - (offset.x || 0), it.y - (offset.y || 0));
+            return new Point(it.x + (offset.x || 0), it.y + (offset.y || 0));
         });
     }
 }

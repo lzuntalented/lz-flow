@@ -56,11 +56,12 @@ export default class CanvasEngine extends EngineInterface {
     text(x, y, text, options) {
         const ctx = this.ctx;
         this.checkOptions(options);
+        ctx.font = options.font;
         let method = 'fillText';
         if (options.stroke) {
             method = 'strokeText';
         }
-        ctx[method](x, y, text);
+        ctx[method](text, x, y);
         this.afterDoDraw(options);
     }
 

@@ -52,7 +52,7 @@ export default class Flow {
         const data = [
             {
                 shape: Constants.prefix + 'Produce',
-                x: 100,
+                x: 150,
                 y: 30,
                 name: '劳动节',
                 id: 1,
@@ -70,6 +70,20 @@ export default class Flow {
                 y: 230,
                 name: 1231,
                 id: 3
+            },
+            {
+                shape: Constants.prefix + 'Start',
+                x: 500,
+                y: 230,
+                name: '开始',
+                id: 4
+            },
+            {
+                shape: Constants.prefix + 'End',
+                x: 500,
+                y: 130,
+                name: '结束',
+                id: 4
             }
         ];
         const lineData = [

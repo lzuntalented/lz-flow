@@ -43,7 +43,7 @@ export default class CoordManage {
         const result = [];
         (arr || []).forEach(p => {
             result.push(Point.sub(p, this.startPoint));
-        })
+        });
         return result;
     }
 

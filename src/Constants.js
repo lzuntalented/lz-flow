@@ -20,7 +20,8 @@ export default {
     defautShape: {
         rect: 'rect',
         text: 'text',
-        polygon: 'polygon'
+        polygon: 'polygon',
+        ellipse: 'ellipse'
     },
 
     // 组件模式

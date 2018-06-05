@@ -70,6 +70,13 @@ export default class Group {
                 points.push([it[0] + this.config.x, it[1] + this.config.y]);
             });
             result = points;
+        } else if (name === Constants.defautShape.ellipse) {
+            const width = cfg.a * 2;
+            const height = cfg.b * 2;
+            const x = cfg.x + this.config.x - width / 2;
+            const y = cfg.y + this.config.y - height / 2;
+            const points = Util.getPointsFromRect(x, y, width, height);
+            result = points;
         }
         return result;
     }

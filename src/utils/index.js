@@ -138,5 +138,6 @@ export default {
     getPointInRectSide,
     inCircle,
     pointToArray,
-    randomString
+    randomString,
+    arrayToPoint
 };

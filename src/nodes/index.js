@@ -5,3 +5,5 @@
  */
 import './produce';
 import './judge';
+import './start';
+import './end';
