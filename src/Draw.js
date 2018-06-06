@@ -11,6 +11,7 @@ import Util from './utils';
 import Engine from './engine/CanvasEngine';
 import CoordManage from './CoordManage';
 import Point from './Point';
+import { getLinkCtrlPoints, getArrowPoints } from './utils/line';
 
 export default class Draw {
     constructor(container, model, height) {
@@ -99,12 +100,7 @@ export default class Draw {
         const gm = this.model.get(Constants.instance.groupManage);
         const groups = gm.getList();
         const nodes = this.model.get(Constants.groupNodes) || {};
-        // const lines = this.model.get(Constants.groupLines) || [];
 
-        // nodes.forEach(it => {
-        //     it.render(this.showCtx);
-        // });
-        console.log(groups);
         // 先绘制连线
         groups.forEach(it => {
             if (it.type !== Constants.groupType.line) {
@@ -117,8 +113,10 @@ export default class Draw {
             const targetIdx = cfg.targetAnchor || 0;
             const startPoint = source.anchorPoints[sourceIdx];
             const endPoint = target.anchorPoints[targetIdx];
-            const points = this.getLinkCtrlPoints(startPoint, endPoint, source.size, target.size);
+            const points = getLinkCtrlPoints(startPoint, endPoint, source.size, target.size);
             this.drawLinkLines(this.showEngine, points);
+            this.drawLinkArrow(this.showEngine, getArrowPoints(Util.arrayPointsToPoint(points)));
+            // this.drawLinkValue(this.showEngine, points);
         });
 
         // 绘制节点
@@ -155,7 +153,7 @@ export default class Draw {
             }
         });
 
-        this.drawLine(this.editCtx, {
+        this.drawLine(this.editEngine, {
             x: 100,
             y: 0,
         },{
@@ -292,52 +290,16 @@ export default class Draw {
         const option = Object.assign({}, config.attr);
         if (shape === Constants.defautShape.rect) {
             ctx.rect(groupX + cfg.x, groupY + cfg.y, cfg.width, cfg.height, option);
-            // ctx.save();
-            // ctx.beginPath();
-            // ctx.strokeStyle = cfg.stroke;
-            // ctx.fillStyle = cfg.fill;
-            // ctx.rect(groupX + cfg.x, groupY + cfg.y, cfg.width, cfg.height);
-            // ctx.closePath();
-            // ctx.stroke();
-            // ctx.fill();
-            // ctx.restore();
         } else if (shape === Constants.defautShape.text) {
             const fontFamily = 'Arial';
             option.font = (cfg.fontSize || 12) + 'px' + (' ' + (cfg.fontFamily || fontFamily));
             ctx.text(groupX + cfg.x, groupY + cfg.y, cfg.label, option);
-            // ctx.save();
-            // ctx.beginPath();
-            // ctx.font = (cfg.fontSize || 12) + 'px' + (' ' + (cfg.fontFamily || fontFamily));
-            // ctx.strokeStyle = cfg.stroke;
-            // ctx.fillStyle = cfg.fill;
-            // ctx.fillText(cfg.label, groupX + cfg.x, groupY + cfg.y);
-            // ctx.closePath();
-            // ctx.restore();
         } else if (shape === Constants.defautShape.polygon) {
             const ps = [];
             cfg.points.forEach(it => {
                 ps.push(Util.arrayToPoint(it));
             });
             ctx.polygon(Point.pointsAddOffset(ps, Point.create(groupX, groupY)), option);
-            // ctx.save();
-            // ctx.beginPath();
-            // ctx.strokeStyle = cfg.stroke;
-            // ctx.fillStyle = cfg.fill;
-            
-            // const point = cfg.points;
-            // point.forEach((it, idx) => {
-            //     const x = it[0] + groupX;
-            //     const y = it[1] + groupY;
-            //     if (idx === 0) {
-            //         ctx.moveTo(x, y);
-            //     } else {
-            //         ctx.lineTo(x, y);
-            //     }
-            // });
-            // ctx.closePath();
-            // ctx.stroke();
-            // ctx.fill();
-            // ctx.restore();
         } else if (shape === Constants.defautShape.ellipse) {
             ctx.ellipse(groupX + cfg.x, groupY + cfg.y, cfg.a, cfg.b, option);
         }
@@ -358,7 +320,11 @@ export default class Draw {
         });
     }
 
-
+    /**
+     * 绘制连线
+     * @param {*} ctx 
+     * @param {*} points 
+     */
     drawLinkLines(ctx, points) {
         const option = {
             stroke: '#FFFFFF',
@@ -371,36 +337,25 @@ export default class Draw {
         ctx.polygon(this.mCoordManage.pointsToCanvasCoord(ps), option);
     }
 
-    //---------使用三次贝塞尔曲线模拟椭圆1---------------------
-    //此方法也会产生当lineWidth较宽，椭圆较扁时，
-    //长轴端较尖锐，不平滑的现象
-    drawEllipse(context, x, y, a, b){
-        //关键是bezierCurveTo中两个控制点的设置
-        //0.5和0.6是两个关键系数（在本函数中为试验而得）
-        var ox = 0.5 * a,
-            oy = 0.6 * b;
-
-        context.save();
-        context.translate(x, y);
-        context.beginPath();
-        //从椭圆纵轴下端开始逆时针方向绘制
-        context.moveTo(0, b); 
-        context.bezierCurveTo(ox, b, a, oy, a, 0);
-        context.bezierCurveTo(a, -oy, ox, -b, 0, -b);
-        context.bezierCurveTo(-ox, -b, -a, -oy, -a, 0);
-        context.bezierCurveTo(-a, oy, -ox, b, 0, b);
-        context.closePath();
-        context.stroke();
-        context.restore();
+    /**
+     * 绘制连续的箭头
+     * @param {*} ctx 
+     * @param {*} points 
+     */
+    drawLinkArrow(ctx, points) {
+        const option = {
+            stroke: '#FFFFFF',
+            closePath: false
+        };
+        const ps = points;
+        ctx.polygon(this.mCoordManage.pointsToCanvasCoord(ps), option);
     }
 
     drawLine(ctx, start, end) {
-        ctx.save();
-        ctx.strokeStyle = '#cacaca';
-        ctx.beginPath();
-        ctx.moveTo(start.x, start.y);
-        ctx.lineTo(end.x, end.y);
-        ctx.stroke();
-        ctx.restore();
+        const option = {
+            stroke: '#cacaca',
+            closePath: false
+        };
+        ctx.polygon([start, end], option);
     }
 }

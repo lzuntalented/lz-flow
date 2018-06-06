@@ -116,6 +116,18 @@ function arrayToPoint(arrPoint) {
 }
 
 /**
+ * 
+ * @param {*} arrPoint 
+ */
+function arrayPointsToPoint(arrPoint) {
+    const result = [];
+    arrPoint.forEach(it => {
+        result.push(arrayToPoint(it));
+    });
+    return result;
+}
+
+/**
  * 随机字符串生成器
  * @param {*} len 
  */
@@ -139,5 +151,6 @@ export default {
     inCircle,
     pointToArray,
     randomString,
-    arrayToPoint
+    arrayToPoint,
+    arrayPointsToPoint
 };
