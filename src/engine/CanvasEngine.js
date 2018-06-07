@@ -149,4 +149,8 @@ export default class CanvasEngine extends EngineInterface {
             ctx.restore();
         }
     }
+
+    clearRect(x, y, width, height) {
+        this.ctx.clearRect(x, y, width, height);
+    }
 }

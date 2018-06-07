@@ -160,16 +160,29 @@ export default class Group {
     pointIn(point) {
         const result = false;
         if (this.type === Constants.groupType.node) {
-            this.list.forEach(it => {
+            for(const i in this.list) {
+                const it = this.list[i];
                 if (inside(Util.pointToArray(point), it.polygonPoints)) {
-                    result = true;
+                    return true;
                 }
-            });
+            }
         }
         return result;
     }
 
+    /**
+     * 检测是否在接控制点上
+     * @param {*} point 
+     */
     pointInAnchor(point) {
-
+        const it = this;
+        if (it.anchorPoints) {
+            for(let j = 0; j < it.anchorPoints.length; ++j) {
+                if (Util.inCircle(Util.pointToArray(point), it.anchorPoints[j], 4)) {
+                    return j;
+                }
+            }
+        }
+        return -1;
     }
 }

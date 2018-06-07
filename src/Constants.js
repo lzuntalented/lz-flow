@@ -32,10 +32,21 @@ export default {
         edit: 'edit'
     },
 
+    // 鼠标事件模式
     eventMode: {
         default: 'eventMode.default',
         anchor: 'eventMode.anchor',
         group: 'eventMode.group'
+    },
+
+    // 控制点连线类型
+    anchorType: {
+        // 默认
+        default: 'lightblue',
+        // 可以连接
+        yes: 'green',
+        // 不可以连接
+        no: 'red'
     },
 
     // 实例

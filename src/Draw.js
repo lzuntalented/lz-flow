@@ -262,11 +262,15 @@ export default class Draw {
         };
     }
 
-    clearPanel() {
+    clearPanel(ctx) {
         const width = this.containerSize.width;
         const height = this.containerSize.height;
-        this.showCtx.clearRect(0, 0, width, height);
-        this.editCtx.clearRect(0, 0, width, height);
+        if (ctx) {
+            ctx.clearRect(0, 0, width, height);
+        } else {
+            this.showEngine.clearRect(0, 0, width, height);
+            this.editEngine.clearRect(0, 0, width, height);
+        }
     }
 
     drawRect(ctx, x, y, w, h) {
@@ -354,6 +358,35 @@ export default class Draw {
     drawLine(ctx, start, end) {
         const option = {
             stroke: '#cacaca',
+            closePath: false
+        };
+        ctx.polygon([start, end], option);
+    }
+
+    renderEditPanel() {
+
+    }
+
+    renderAnchorLinkLine(start, end, anchorType = Constants.anchorType.default) {
+        this.clearPanel(this.editEngine);
+
+        const gm = this.model.get(Constants.instance.groupManage);
+        const groups = gm.getList();
+
+        // 绘制节点控制点
+        groups.forEach(it => {
+            if (it.type === Constants.groupType.line) {
+                return ;
+            }
+            this.drawAnchorPoint(this.editEngine, it.anchorPoints);
+        });
+
+        // 绘制编辑模式控件
+        this.renderDefaultEditItem();
+
+        const ctx = this.editEngine;
+        const option = {
+            stroke: anchorType,
             closePath: false
         };
         ctx.polygon([start, end], option);

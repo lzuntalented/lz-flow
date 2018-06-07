@@ -7,6 +7,7 @@ import inside from 'point-in-polygon';
 import Constants from './Constants';
 import Util from './utils';
 import DomUtil from './utils/dom';
+import CollideManage from './CollideManage';
 const getElementViewTop = DomUtil.getElementViewTop;
 const getElementViewLeft = DomUtil.getElementViewLeft;
 
@@ -14,6 +15,8 @@ export default class EventHandler {
     constructor(container, drawHandler) {
         this.container = container;
         this.drawHandler = drawHandler;
+        this.mCollideManage = new CollideManage(this.drawHandler.model);
+
         this.addEventListener(this.container, 'click', this.onClick.bind(this));
         this.addEventListener(this.container, 'mousedown', this.onMouseDown.bind(this));
         this.addEventListener(this.container, 'mouseup', this.onMouseUp.bind(this));
@@ -22,7 +25,11 @@ export default class EventHandler {
 
         this.draging = false;
         this.dragObject = null;
+        // 鼠标点击模式
         this.mouseDownMode = Constants.eventMode.default;
+        // 鼠标点击坐标
+        this.mouseDownPoint = null;
+        
     }
 
     addEventListener(dom, type, callback) {
@@ -175,20 +182,37 @@ export default class EventHandler {
     }
 
     onMouseDown(e) {
-        console.log('onMouseDown');
         const clickPoint = {
             x: e.clientX,
             y: e.clientY
         };
+        this.mouseDownPoint = clickPoint;
+        this.mouseDownMode = Constants.eventMode.default;
         const p = this.getPointObject(clickPoint);
-        if (this.checkPointInAnchor([p.coordPoint.x, p.coordPoint.y])) {
 
+        // 检测是否点击控制点
+        let obj = this.mCollideManage.checkPointInAnchor(p.coordPoint);
+        if (obj) {
+            this.mouseDownMode = Constants.eventMode.anchor;
+            this.dragObject = obj;
+            console.log(obj);
+            return;
         }
-        const item = this.checkPointInGroup([p.coordPoint.x, p.coordPoint.y]);
-        if (item) {
-            this.draging = true;
-            this.dragObject = item;
+        // if (this.checkPointInAnchor([p.coordPoint.x, p.coordPoint.y])) {
+
+        // }
+        // 检测是否点击节点
+        obj = this.mCollideManage.checkPointInGroup(p.coordPoint);
+        if (obj) {
+            this.dragObject = obj;
+            this.mouseDownMode = Constants.eventMode.group;
+            console.log(obj);
         }
+        // const item = this.checkPointInGroup([p.coordPoint.x, p.coordPoint.y]);
+        // if (item) {
+        //     this.draging = true;
+        //     this.dragObject = item;
+        // }
         // console.log(p);
     }
 
@@ -199,6 +223,10 @@ export default class EventHandler {
             y: e.clientY
         };
         const p = this.getPointObject(clickPoint);
+
+        if (this.mouseDownMode === Constants.eventMode.anchor) {
+            this.drawHandler.renderAnchorLinkLine(this.getPointObject(this.mouseDownPoint).domPoint, p.domPoint);
+        }
         const item = this.checkPointInGroup([p.coordPoint.x, p.coordPoint.y]);
         if (item) {
             console.log('in group');
@@ -227,6 +255,7 @@ export default class EventHandler {
             console.log('in group');
         }
         // console.log(p);
+        this.mouseDownMode = Constants.eventMode.default;
     }
 
 }
