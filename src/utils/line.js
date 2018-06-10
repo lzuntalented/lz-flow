@@ -133,7 +133,8 @@ export function getArrowPoints(points) {
     const result = [];
     if (points.length > 1) {
         const end = points[points.length -1];
-        const direction = getDirection(points[points.length - 2], end);
+        const start = points[points.length - 2];
+        const direction = getDirection(start, end);
         switch(direction) {
             case 0: 
                 result.push({
