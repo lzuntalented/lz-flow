@@ -25,8 +25,8 @@ LzFlow.registerNode(name, {
                 y: -height / 2,
                 width,
                 height,
-                stroke: '#49dbff',
-                fill: '#8be3fe'
+                stroke: '#81e4de',
+                fill: '#e7f8ff'
             }
         });
 

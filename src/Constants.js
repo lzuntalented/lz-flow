@@ -36,7 +36,8 @@ export default {
     eventMode: {
         default: 'eventMode.default',
         anchor: 'eventMode.anchor',
-        group: 'eventMode.group'
+        group: 'eventMode.group',
+        editGroup: 'eventMode.editGroup'
     },
 
     // 控制点连线类型
@@ -57,5 +58,7 @@ export default {
         idManage: 'instance.idManage',
         // 坐标管理器
         corrdManage: 'instance.corrdManage'
-    }
+    },
+
+    lineStroke: '#aab7c4'
 }

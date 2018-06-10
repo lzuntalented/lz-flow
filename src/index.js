@@ -42,6 +42,8 @@ export default class Flow {
 
         const cfg = this.config;
         this.drawHandler = new Draw(cfg.panel, this.model, cfg.height);
+
+        this.model.setDefaultEdit();
     }
 
     render() {
@@ -61,7 +63,7 @@ export default class Flow {
                 shape: Constants.prefix + 'Produce',
                 x: 200,
                 y: 180,
-                name: 1231,
+                name: 7898,
                 id: 2,
             },
             {
@@ -83,7 +85,7 @@ export default class Flow {
                 x: 500,
                 y: 130,
                 name: '结束',
-                id: 4
+                id: 5
             }
         ];
         const lineData = [

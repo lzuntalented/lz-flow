@@ -44,4 +44,8 @@ export default class Point {
             return new Point(it.x + (offset.x || 0), it.y + (offset.y || 0));
         });
     }
+
+    static equal(p1, p2) {
+        return (p1 && p2 && p1.x === p2.x && p1.y === p2.y)
+    }
 }

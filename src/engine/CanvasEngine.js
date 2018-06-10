@@ -136,14 +136,14 @@ export default class CanvasEngine extends EngineInterface {
     afterDoDraw(options) {
         const ctx = this.ctx;
         
+        if(options.closePath !== false) {
+            ctx.closePath();
+        }
         if(options.stroke) {
             ctx.stroke();
         }
         if(options.fill) {
             ctx.fill();
-        }
-        if(options.closePath !== false) {
-            ctx.closePath();
         }
         if (options.restore !== false) {
             ctx.restore();

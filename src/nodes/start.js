@@ -23,8 +23,8 @@ LzFlow.registerNode(name, {
                 y: 0,
                 a: width / 2,
                 b: height / 2,
-                stroke: '#49dbff',
-                fill: '#8be3fe'
+                stroke: '#ffce8b',
+                fill: '#fef7e7'
             }
         });
 
@@ -33,7 +33,7 @@ LzFlow.registerNode(name, {
                 label: config.name,
                 x: -txtWidth / 2,
                 y: txtHeight / 2,
-                fill: '#6a6a6a'
+                fill: '#666666'
             }
         });
 

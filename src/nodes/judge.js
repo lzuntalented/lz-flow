@@ -24,8 +24,8 @@ LzFlow.registerNode(name, {
         const result = group.add('polygon', {
             attr: {
                 points,
-                stroke: '#49dbff',
-                fill: '#8be3fe'
+                stroke: '#81e4de',
+                fill: '#e7f8ff'
             }
         });
 

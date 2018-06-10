@@ -95,8 +95,8 @@ function getPointInRectSide(point, rect) {
 }
 
 function inCircle(arrPoint, circleCenter, radius) {
-    const r = Math.sqrt(Math.abs(arrPoint[0] - circleCenter.x) + Math.abs(arrPoint[1] - circleCenter.y));
-    if (r <= radius) {
+    const r = Math.pow(Math.abs(arrPoint[0] - circleCenter.x), 2) + Math.pow(Math.abs(arrPoint[1] - circleCenter.y), 2);
+    if (r <= radius * radius) {
         return true;
     }
 

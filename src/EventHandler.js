@@ -8,6 +8,7 @@ import Constants from './Constants';
 import Util from './utils';
 import DomUtil from './utils/dom';
 import CollideManage from './CollideManage';
+import Point from './Point';
 const getElementViewTop = DomUtil.getElementViewTop;
 const getElementViewLeft = DomUtil.getElementViewLeft;
 
@@ -16,6 +17,8 @@ export default class EventHandler {
         this.container = container;
         this.drawHandler = drawHandler;
         this.mCollideManage = new CollideManage(this.drawHandler.model);
+        this.model = this.drawHandler.model;
+        this.gm = this.model.get(Constants.instance.groupManage);
 
         this.addEventListener(this.container, 'click', this.onClick.bind(this));
         this.addEventListener(this.container, 'mousedown', this.onMouseDown.bind(this));
@@ -198,9 +201,20 @@ export default class EventHandler {
             console.log(obj);
             return;
         }
-        // if (this.checkPointInAnchor([p.coordPoint.x, p.coordPoint.y])) {
 
-        // }
+        // 检测是否点击编辑节点
+        obj = this.mCollideManage.checkPointInEditGroup(p.coordPoint);
+        if (obj) {
+            const gm = this.model.get(Constants.instance.groupManage);
+            const config = Object.assign({}, obj.config);
+            config.x = p.coordPoint.x;
+            config.y = p.coordPoint.y;
+            this.dragObject = gm.addItem(config);
+            this.mouseDownMode = Constants.eventMode.editGroup;
+            console.log(obj);
+            return;
+        }
+
         // 检测是否点击节点
         obj = this.mCollideManage.checkPointInGroup(p.coordPoint);
         if (obj) {
@@ -208,12 +222,6 @@ export default class EventHandler {
             this.mouseDownMode = Constants.eventMode.group;
             console.log(obj);
         }
-        // const item = this.checkPointInGroup([p.coordPoint.x, p.coordPoint.y]);
-        // if (item) {
-        //     this.draging = true;
-        //     this.dragObject = item;
-        // }
-        // console.log(p);
     }
 
     
@@ -222,24 +230,40 @@ export default class EventHandler {
             x: e.clientX,
             y: e.clientY
         };
+        if (Point.equal(this.mouseDownPoint, clickPoint)){
+            return;
+        }
+
         const p = this.getPointObject(clickPoint);
 
         if (this.mouseDownMode === Constants.eventMode.anchor) {
             this.drawHandler.renderAnchorLinkLine(this.getPointObject(this.mouseDownPoint).domPoint, p.domPoint);
+            return;
         }
-        const item = this.checkPointInGroup([p.coordPoint.x, p.coordPoint.y]);
-        if (item) {
-            console.log('in group');
-        }
-        if (this.draging) {
-            // this.dragObject.config.x = p.coordPoint.x;
-            // this.dragObject.config.y = p.coordPoint.y;
+
+        if (this.mouseDownMode === Constants.eventMode.editGroup) {
             this.dragObject.setPosition(p.coordPoint);
-            const list = this.drawHandler.model.get(Constants.groupList, []);
-            this.drawHandler.clearPanel();
-            this.drawHandler.render(list);
-            // console.log(this.dragObject);
+            this.drawHandler.render();
+            return;
         }
+
+        if (this.mouseDownMode === Constants.eventMode.group) {
+            this.dragObject.setPosition(p.coordPoint);
+            this.drawHandler.render();
+        }
+        // const item = this.checkPointInGroup([p.coordPoint.x, p.coordPoint.y]);
+        // if (item) {
+        //     console.log('in group');
+        // }
+        // if (this.draging) {
+        //     // this.dragObject.config.x = p.coordPoint.x;
+        //     // this.dragObject.config.y = p.coordPoint.y;
+        //     this.dragObject.setPosition(p.coordPoint);
+        //     const list = this.drawHandler.model.get(Constants.groupList, []);
+        //     this.drawHandler.clearPanel();
+        //     this.drawHandler.render(list);
+        //     // console.log(this.dragObject);
+        // }
         // console.log(p);
     }
 
@@ -251,6 +275,34 @@ export default class EventHandler {
             y: e.clientY
         };
         const p = this.getPointObject(clickPoint);
+
+        let obj;
+        if (this.mouseDownMode === Constants.eventMode.anchor) {
+            // 检测是否点击控制点
+            obj = this.mCollideManage.checkPointInAnchor(p.coordPoint);
+            if (obj) {
+                const config = {
+                    sourceId: this.dragObject.obj.config.id, 
+                    targetId: obj.obj.config.id,
+                    sourceAnchor: this.dragObject.index,
+                    targetAnchor: obj.index
+                };
+                console.log('up============', config, this.dragObject, obj);
+                this.gm.addItem(config, Constants.groupType.line);
+                this.drawHandler.render();
+            }
+        }
+
+        if (this.mouseDownMode === Constants.eventMode.editGroup) {
+            this.dragObject.setPosition(p.coordPoint);
+            this.drawHandler.render();
+        }
+
+        if (this.mouseDownMode === Constants.eventMode.group) {
+            this.dragObject.setPosition(p.coordPoint);
+            this.drawHandler.render();
+        }
+
         if (this.checkPointInGroup([p.coordPoint.x, p.coordPoint.y])) {
             console.log('in group');
         }

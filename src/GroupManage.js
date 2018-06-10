@@ -32,10 +32,25 @@ export default class GroupManage {
             const nodes = this.model.get(Constants.groupNodes, {});
             nodes[config.id] = item;
         } else {
-            const lines = this.model.get(Constants.groupEditList, {});
+            const lines = this.model.get(Constants.groupLines, {});
             lines[config.id] = item;
         }
-        
+        return item;
+    }
+
+    /**
+     * 根據配置生成
+     */
+    createItem(config, type = Constants.groupType.node) {
+        const idm = this.model.get(Constants.instance.idManage);
+        // 不存在自定义id，新建唯一id
+        if (config.id) {
+            idm.add(config.id);            
+        } else {
+            config.id = idm.create();
+        }
+        const item = new Group (config, type);
+        return item;
     }
 
     deleteItem(id) {

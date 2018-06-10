@@ -97,6 +97,8 @@ export default class Draw {
     }
 
     render() {
+        this.clearPanel();
+
         const gm = this.model.get(Constants.instance.groupManage);
         const groups = gm.getList();
         const nodes = this.model.get(Constants.groupNodes) || {};
@@ -109,6 +111,7 @@ export default class Draw {
             const cfg = it.config;
             const source = nodes[it.config.sourceId];
             const target = nodes[it.config.targetId];
+            if (!source || !target) return;
             const sourceIdx = cfg.sourceAnchor || 0;
             const targetIdx = cfg.targetAnchor || 0;
             const startPoint = source.anchorPoints[sourceIdx];
@@ -148,6 +151,7 @@ export default class Draw {
                     const config = it.config;
                     config.x = 50;
                     config.y = idx * 60 + 30;
+                    it.setPosition(Point.create(config.x, config.y));
                     this.drawDefaultShape(this.editEngine, key, value, it.config, {x: 0, y:0});
                 }
             }
@@ -317,7 +321,7 @@ export default class Draw {
     drawAnchorPoint(ctx, points) {
         const radius = 4;
         const option = {
-            fill: '#FFFFFF'
+            fill: Constants.lineStroke
         };
         points.forEach(it => {
             ctx.circle(this.mCoordManage.pointToCanvasCoord(it), radius, option);
@@ -331,7 +335,7 @@ export default class Draw {
      */
     drawLinkLines(ctx, points) {
         const option = {
-            stroke: '#FFFFFF',
+            stroke: Constants.lineStroke,
             closePath: false
         };
         const ps = [];
@@ -348,7 +352,7 @@ export default class Draw {
      */
     drawLinkArrow(ctx, points) {
         const option = {
-            stroke: '#FFFFFF',
+            stroke: Constants.lineStroke,
             closePath: false
         };
         const ps = points;
@@ -357,7 +361,7 @@ export default class Draw {
 
     drawLine(ctx, start, end) {
         const option = {
-            stroke: '#cacaca',
+            stroke: Constants.lineStroke,
             closePath: false
         };
         ctx.polygon([start, end], option);
