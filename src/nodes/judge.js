@@ -46,5 +46,21 @@ LzFlow.registerNode(name, {
             [1, 0.5],
             [0.5, 1],
         ]
+    },
+    getAnchorPointTypes() {
+        return [
+            {
+                type: Constants.anchorType.in,
+                count: 1
+            },
+            {
+                type: Constants.anchorType.out,
+                count: 1
+            },
+            {
+                type: Constants.anchorType.out,
+                count: 1
+            },
+        ];
     }
 });

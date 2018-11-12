@@ -35,6 +35,10 @@ export default class CollideManage {
         return false;
     }
 
+    /**
+     * 检测点是否在锚点上
+     * @param {*} arrPoint 
+     */
     checkPointInAnchor(arrPoint) {
         const list = this.model.get(Constants.groupList, []);
 
@@ -47,6 +51,20 @@ export default class CollideManage {
                     index
                 };
             }
+        }
+        return false;
+    }
+
+    /**
+     * 检测两个控制点是否可以连接，并返回连续颜色
+     * @param {*} startObj 
+     * @param {*} endObj 
+     */
+    checkAnchorsLink(startObj, endObj) {
+        const startType = startObj.obj.anchorPointTypes[startObj.index].type;
+        const endType = endObj.obj.anchorPointTypes[endObj.index].type;
+        if (startObj.obj !== endObj.obj && startType !== endType) {
+            return true;
         }
         return false;
     }

@@ -13,6 +13,7 @@ export default class Group {
         this.list = {};
         this.config = cfg;
         this.type = type;
+        this.anchorPointTypes = [];
         this.render();
     }
 
@@ -149,6 +150,7 @@ export default class Group {
 
         const keyShape = hooks.draw(this.config, this);
         this.parseAnchorPoints(hooks.getAnchorPoints && hooks.getAnchorPoints() || []);
+        this.anchorPointTypes = hooks.getAnchorPointTypes();
         return keyShape;
         // console.log(this.list);
     }

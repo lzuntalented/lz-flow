@@ -219,6 +219,8 @@ export default class EventHandler {
         obj = this.mCollideManage.checkPointInGroup(p.coordPoint);
         if (obj) {
             this.dragObject = obj;
+            this.gm.setActive(obj);
+            this.drawHandler.renderActive();
             this.mouseDownMode = Constants.eventMode.group;
             console.log(obj);
         }
@@ -237,7 +239,15 @@ export default class EventHandler {
         const p = this.getPointObject(clickPoint);
 
         if (this.mouseDownMode === Constants.eventMode.anchor) {
-            this.drawHandler.renderAnchorLinkLine(this.getPointObject(this.mouseDownPoint).domPoint, p.domPoint);
+            // 检测是否点击控制点
+            const obj = this.mCollideManage.checkPointInAnchor(p.coordPoint);
+            let stroke = Constants.anchorStroke.default;
+            if (obj) {
+                stroke = this.mCollideManage.checkAnchorsLink(this.dragObject, obj);
+                if (stroke) stroke = Constants.anchorStroke.yes;
+                else stroke = Constants.anchorStroke.no;
+            }
+            this.drawHandler.renderAnchorLinkLine(this.getPointObject(this.mouseDownPoint).domPoint, p.domPoint, stroke);
             return;
         }
 
@@ -276,11 +286,12 @@ export default class EventHandler {
         };
         const p = this.getPointObject(clickPoint);
 
-        let obj;
         if (this.mouseDownMode === Constants.eventMode.anchor) {
             // 检测是否点击控制点
-            obj = this.mCollideManage.checkPointInAnchor(p.coordPoint);
+            const obj = this.mCollideManage.checkPointInAnchor(p.coordPoint);
             if (obj) {
+                const link = this.mCollideManage.checkAnchorsLink(this.dragObject, obj);
+
                 const config = {
                     sourceId: this.dragObject.obj.config.id, 
                     targetId: obj.obj.config.id,
@@ -288,7 +299,9 @@ export default class EventHandler {
                     targetAnchor: obj.index
                 };
                 console.log('up============', config, this.dragObject, obj);
-                this.gm.addItem(config, Constants.groupType.line);
+                if (link) this.gm.addItem(config, Constants.groupType.line);
+                this.drawHandler.render();
+            } else {
                 this.drawHandler.render();
             }
         }
@@ -303,9 +316,9 @@ export default class EventHandler {
             this.drawHandler.render();
         }
 
-        if (this.checkPointInGroup([p.coordPoint.x, p.coordPoint.y])) {
-            console.log('in group');
-        }
+        // if (this.checkPointInGroup([p.coordPoint.x, p.coordPoint.y])) {
+        //     console.log('in group');
+        // }
         // console.log(p);
         this.mouseDownMode = Constants.eventMode.default;
     }

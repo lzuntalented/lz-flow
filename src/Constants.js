@@ -41,13 +41,20 @@ export default {
     },
 
     // 控制点连线类型
-    anchorType: {
+    anchorStroke: {
         // 默认
         default: 'lightblue',
         // 可以连接
         yes: 'green',
         // 不可以连接
         no: 'red'
+    },
+
+    anchorType: {
+        // 入度
+        in: 'anchorType.in',
+        // 出度
+        out: 'anchorType.out'
     },
 
     // 实例

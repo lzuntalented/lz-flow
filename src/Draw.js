@@ -123,10 +123,39 @@ export default class Draw {
         });
 
         // 绘制节点
+        // groups.forEach(it => {
+        //     if (it.type === Constants.groupType.line) {
+        //         return ;
+        //     }
+        //     for(const key in it.list) {
+        //         const value = it.list[key];
+        //         if (this.defautShape.indexOf(key) > -1) {
+        //             this.drawDefaultShape(this.showEngine, key, value, it.config);
+        //         }
+        //     }
+        //     this.drawAnchorPoint(this.editEngine, it.anchorPoints);
+        // });
+
+        // this.renderDefaultEditItem();
+
+        this.renderActive();
+    }
+
+    /**
+     * 渲染激发状态下的节点
+     */
+    renderActive() {
+        this.clearPanel(this.editEngine);
+
+        const gm = this.model.get(Constants.instance.groupManage);
+        const groups = gm.getList();
+
+        // 绘制节点
         groups.forEach(it => {
             if (it.type === Constants.groupType.line) {
                 return ;
             }
+
             for(const key in it.list) {
                 const value = it.list[key];
                 if (this.defautShape.indexOf(key) > -1) {
@@ -134,6 +163,11 @@ export default class Draw {
                 }
             }
             this.drawAnchorPoint(this.editEngine, it.anchorPoints);
+
+            if (it.active) {
+                const obj = it.size;
+                this.drawRect(this.editEngine, obj.x, obj.y, obj.w, obj.h);
+            }
         });
 
         this.renderDefaultEditItem();
@@ -278,7 +312,7 @@ export default class Draw {
     }
 
     drawRect(ctx, x, y, w, h) {
-        ctx.drawRect(ctx, x, y, w, h);
+        ctx.rect(x, y, w, h, { stroke: 'green' });
     }
 
     /**
@@ -371,7 +405,7 @@ export default class Draw {
 
     }
 
-    renderAnchorLinkLine(start, end, anchorType = Constants.anchorType.default) {
+    renderAnchorLinkLine(start, end, anchorType = Constants.anchorStroke.default) {
         this.clearPanel(this.editEngine);
 
         const gm = this.model.get(Constants.instance.groupManage);

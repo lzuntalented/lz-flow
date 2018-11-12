@@ -64,4 +64,25 @@ export default class GroupManage {
         return this.model.get(Constants.groupList, []);
     }
 
+    /**
+     * 设置节点为触发状态
+     * @param {*} obj 
+     * @param {*} flag 
+     */
+    setActive(obj, flag = true) {
+        if (flag === true) {
+            // 激发状态的节点只能有一个
+            const list = this.model.get(Constants.groupList, []);
+            list.forEach(it => {
+                if (it.type === Constants.groupType.node) {
+                    it.active = false;
+                }
+            });
+        }
+        
+        obj.active = flag;
+    }
+
+
+
 }
