@@ -64,7 +64,17 @@ export default class CollideManage {
         const startType = startObj.obj.anchorPointTypes[startObj.index].type;
         const endType = endObj.obj.anchorPointTypes[endObj.index].type;
         if (startObj.obj !== endObj.obj && startType !== endType) {
-            return true;
+            let start = startObj;
+            let end = endObj;
+            if (startType === Constants.anchorType.in) {
+                start = endObj;
+                end = startObj;
+            }
+            return {
+                flag: true,
+                start,
+                end,
+            };
         }
         return false;
     }

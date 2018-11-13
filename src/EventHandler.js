@@ -198,6 +198,8 @@ export default class EventHandler {
         if (obj) {
             this.mouseDownMode = Constants.eventMode.anchor;
             this.dragObject = obj;
+            this.gm.setActive(obj.obj);
+            this.drawHandler.renderActive();
             console.log(obj);
             return;
         }
@@ -206,7 +208,9 @@ export default class EventHandler {
         obj = this.mCollideManage.checkPointInEditGroup(p.coordPoint);
         if (obj) {
             const gm = this.model.get(Constants.instance.groupManage);
+            // console.log('click down obj', obj);
             const config = Object.assign({}, obj.config);
+            delete config.id;
             config.x = p.coordPoint.x;
             config.y = p.coordPoint.y;
             this.dragObject = gm.addItem(config);
@@ -233,6 +237,10 @@ export default class EventHandler {
             y: e.clientY
         };
         if (Point.equal(this.mouseDownPoint, clickPoint)){
+            return;
+        }
+
+        if (this.mouseDownMode === Constants.eventMode.default) {
             return;
         }
 
@@ -291,15 +299,16 @@ export default class EventHandler {
             const obj = this.mCollideManage.checkPointInAnchor(p.coordPoint);
             if (obj) {
                 const link = this.mCollideManage.checkAnchorsLink(this.dragObject, obj);
-
-                const config = {
-                    sourceId: this.dragObject.obj.config.id, 
-                    targetId: obj.obj.config.id,
-                    sourceAnchor: this.dragObject.index,
-                    targetAnchor: obj.index
-                };
-                console.log('up============', config, this.dragObject, obj);
-                if (link) this.gm.addItem(config, Constants.groupType.line);
+                if (link) {
+                    const config = {
+                        sourceId: link.start.obj.config.id, 
+                        targetId: link.end.obj.config.id,
+                        sourceAnchor: link.start.index,
+                        targetAnchor: link.end.index
+                    };
+                    // console.log('up============', config, this.dragObject, obj);
+                    this.gm.addItem(config, Constants.groupType.line);
+                }
                 this.drawHandler.render();
             } else {
                 this.drawHandler.render();

@@ -24,7 +24,7 @@ export default class IDManage {
         while(true) {
             const id = Util.randomString();
             if (this.map[id]) {
-                break;
+                continue;
             }
             return id;
         }
